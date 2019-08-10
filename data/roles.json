@@ -1,0 +1,4 @@
+{
+    "bank": ["teller", "robber"],
+    "library": ["student", "librarian"]
+}
