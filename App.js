@@ -1,20 +1,15 @@
-
-const express = require("express");
-
 const expressApp = require('express')()
 const httpServer = require('http').createServer(expressApp)
 const socketIo = require('socket.io')(httpServer)
 const randomWords = require('random-words')
 
-const {getRandomLocation} = require('./helpers/gameInfoHelper')
+const { getRandomLocation, getRandomRolesForLocation } = require('./helpers/gameInfoHelper')
 
 const port = 8080
 
 httpServer.listen(port, () => {
   console.log(`running at port ${port}`);
 })
-
-expressApp.get('/test', (req, res) => res.send("hello"))
 
 const roomsMemberList = {}
 const roomsInfo = {}
@@ -52,7 +47,12 @@ socketIo.on('connection', (socket) => {
         const theme = roomsInfo[roomName].theme
         const location = getRandomLocation(theme)
 
-        console.log('location', location)
+        const randomizedRoles = getRandomRolesForLocation(location, roomsMemberList[roomName].length)
+        const sockets = Object.keys(socketIo.of('/').in(roomName).sockets)
+
+        sockets.forEach((socketId, id) => {
+            socketIo.to(socketId).emit('role', `your role is ${randomizedRoles[id]}`)
+        })
 
         socketIo.to(roomName).emit('message', `Game has started in room ${roomName}`)
         socketIo.to(roomName).emit('roster', roomsMemberList[roomName])
