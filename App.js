@@ -7,7 +7,7 @@ const { socketConnectionHandler } = require('./sockets/socketConnectionHandler')
 const port = 8080
 
 httpServer.listen(port, () => {
-  console.log(`running at port ${port}`);
+  console.log(`running at port ${port}`)
 })
 
 socketConnectionHandler(socketIo)
