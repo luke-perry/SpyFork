@@ -32,6 +32,10 @@ class GameSocketListener {
     GameSocketListener.roomsInfo = newInfo
   }
 
+  emitEvent(destination, ...emitParams) {
+    this.socketIo.to(destination).emit(...emitParams)
+  }
+
   createGame(hostName, theme) {
     const uniqueRoomName = randomWords({ exactly: 2, maxLength: 9 }).join('-')
     this.socket.join(uniqueRoomName)
@@ -39,9 +43,9 @@ class GameSocketListener {
     GameSocketListener.roomsMemberList[uniqueRoomName] = [hostName]
     GameSocketListener.roomsInfo[uniqueRoomName] = { theme }
 
-    this.socketIo.to(uniqueRoomName).emit('message', `${hostName} has joined ${uniqueRoomName} as host`)
-    this.socketIo.to(uniqueRoomName).emit('message', `${uniqueRoomName} Room created`)
-    this.socketIo.to(uniqueRoomName).emit('roster', GameSocketListener.roomsMemberList[uniqueRoomName])
+    this.emitEvent(uniqueRoomName, 'message', `${hostName} has joined ${uniqueRoomName} as host`)
+    this.emitEvent(uniqueRoomName, 'message', `${uniqueRoomName} Room created`)
+    this.emitEvent(uniqueRoomName, 'roster', GameSocketListener.roomsMemberList[uniqueRoomName])
   }
 
   joinGame(playerName, roomName) {
@@ -49,9 +53,8 @@ class GameSocketListener {
 
     GameSocketListener.roomsMemberList[roomName].push(playerName)
 
-
-    this.socketIo.to(roomName).emit('message', `${playerName} has joined ${roomName}`)
-    this.socketIo.to(roomName).emit('roster', GameSocketListener.roomsMemberList[roomName])
+    this.emitEvent(roomName, 'message', `${playerName} has joined ${roomName}`)
+    this.emitEvent(roomName, 'roster', GameSocketListener.roomsMemberList[roomName])
   }
 
   startGame(roomName) {
@@ -63,12 +66,12 @@ class GameSocketListener {
     const sockets = Object.keys(this.socketIo.of('/').in(roomName).sockets)
 
     sockets.forEach((socketId, id) => {
-      this.socketIo.to(socketId).emit('role', `your role is ${randomizedRoles[id]}`)
+      this.emitEvent(socketId, 'role', `your role is ${randomizedRoles[id]}`)
     })
 
-    this.socketIo.to(roomName).emit('message', `Game has started in room ${roomName}`)
-    this.socketIo.to(roomName).emit('roster', GameSocketListener.roomsMemberList[roomName])
-    this.socketIo.to(roomName).emit('location', location)
+    this.emitEvent(roomName, 'message', `Game has started in room ${roomName}`)
+    this.emitEvent(roomName, 'roster', GameSocketListener.roomsMemberList[roomName])
+    this.emitEvent(roomName, 'location', location)
   }
 }
 
