@@ -1,21 +1,23 @@
 const _ = require('lodash')
 
+const mathUtility = require('../utilities/mathUtility')
 const locations = require('../data/locations.json')
 const roles = require('../data/roles.json')
 
-function getRandomInt(max) {
-  return Math.floor(Math.random() * Math.floor(max))
-}
+const insertSpyAtRandomLocation = (trimmedRoles) => {
+  const randomIndexForSpy = mathUtility.getRandomArrayIndex(trimmedRoles.length - 1)
 
-function getRandomArrayIndex(max) {
-  return getRandomInt(max - 1)
+  const spyInsertedRoles = trimmedRoles
+  spyInsertedRoles[randomIndexForSpy] = 'spy'
+
+  return spyInsertedRoles
 }
 
 const getRandomLocation = (theme) => {
   const themedLocations = locations[theme]
 
   const numberOfLocations = locations[theme].length
-  const randomIndexForLocation = getRandomArrayIndex(numberOfLocations)
+  const randomIndexForLocation = mathUtility.getRandomArrayIndex(numberOfLocations)
 
   const location = themedLocations[randomIndexForLocation]
 
@@ -28,10 +30,7 @@ const getRandomRolesForLocation = (location, numberOfPlayers) => {
   const shuffledRoles = _.shuffle(locationsRoles)
   const rolesForGameSize = shuffledRoles.splice(0, numberOfPlayers)
 
-  const randomIndexForSpy = getRandomArrayIndex(numberOfPlayers)
-  rolesForGameSize[randomIndexForSpy] = 'spy'
-
-  return rolesForGameSize
+  return insertSpyAtRandomLocation(rolesForGameSize)
 }
 
 module.exports = {

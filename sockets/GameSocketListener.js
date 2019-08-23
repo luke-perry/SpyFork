@@ -1,6 +1,6 @@
 const randomWords = require('random-words')
 
-const { getRandomLocation, getRandomRolesForLocation } = require('../helpers/gameInfoHelper')
+const gameInfoHelper = require('../helpers/gameInfoHelper')
 
 class GameSocketListener {
   constructor(socketIoInstance, socket) {
@@ -39,7 +39,7 @@ class GameSocketListener {
     GameSocketListener.roomsMemberList[uniqueRoomName] = [hostName]
     GameSocketListener.roomsInfo[uniqueRoomName] = { theme }
 
-    this.socketIo.to(uniqueRoomName).emit('message', `${hostName} has joined  ${uniqueRoomName} as host`)
+    this.socketIo.to(uniqueRoomName).emit('message', `${hostName} has joined ${uniqueRoomName} as host`)
     this.socketIo.to(uniqueRoomName).emit('message', `${uniqueRoomName} Room created`)
     this.socketIo.to(uniqueRoomName).emit('roster', GameSocketListener.roomsMemberList[uniqueRoomName])
   }
@@ -49,15 +49,17 @@ class GameSocketListener {
 
     GameSocketListener.roomsMemberList[roomName].push(playerName)
 
+
     this.socketIo.to(roomName).emit('message', `${playerName} has joined ${roomName}`)
     this.socketIo.to(roomName).emit('roster', GameSocketListener.roomsMemberList[roomName])
   }
 
   startGame(roomName) {
     const { theme } = GameSocketListener.roomsInfo[roomName]
-    const location = getRandomLocation(theme)
+    const location = gameInfoHelper.getRandomLocation(theme)
+    const numberOfPlayers = GameSocketListener.roomsMemberList[roomName].length
 
-    const randomizedRoles = getRandomRolesForLocation(location, GameSocketListener.roomsMemberList[roomName].length)
+    const randomizedRoles = gameInfoHelper.getRandomRolesForLocation(location, numberOfPlayers)
     const sockets = Object.keys(this.socketIo.of('/').in(roomName).sockets)
 
     sockets.forEach((socketId, id) => {

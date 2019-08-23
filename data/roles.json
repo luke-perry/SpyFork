@@ -1,4 +1,4 @@
 {
-    "bank": ["teller", "robber"],
-    "library": ["student", "librarian"]
+    "bank": ["teller", "robber", "guard", "banker", "customer"],
+    "library": ["student", "librarian", "tutor", "bookworm", "researcher"]
 }
