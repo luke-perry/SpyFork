@@ -4,10 +4,12 @@
   "description": "Spyfall remake",
   "main": "App.js",
   "scripts": {
+    "start": "node App.js",
     "test": "jest --watch",
     "test-cov": "jest --coverage",
     "acceptance": "jest ./acceptance",
-    "start": "node App.js"
+    "lint": "node_modules/eslint/bin/eslint.js .",
+    "suite": "npm run lint && npm run test-cov && npm run acceptance"
   },
   "repository": {
     "type": "git",
@@ -26,15 +28,15 @@
     "express": "^4.16.4",
     "lodash": "^4.17.15",
     "random-words": "^1.1.0",
-    "socket.io": "^2.2.0",
-    "socket.io-client": "^2.2.0",
-    "socketio-wildcard": "^2.0.0"
+    "socket.io": "^2.2.0"
   },
   "devDependencies": {
     "eslint": "^6.1.0",
     "eslint-config-airbnb-base": "^14.0.0",
     "eslint-plugin-import": "^2.18.2",
     "eslint-plugin-jest": "^22.15.1",
-    "jest": "^24.9.0"
+    "jest": "^24.9.0",
+    "socket.io-client": "^2.2.0",
+    "socketio-wildcard": "^2.0.0"
   }
 }
