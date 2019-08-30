@@ -1,5 +1,5 @@
-/* eslint-disable global-require */
 const ioClient = require('socket.io-client')
+const setupWildCardListening = require('socketio-wildcard')(ioClient.Manager)
 
 const server = require('../App')
 const { setupGame } = require('./acceptanceTestHelper')
@@ -7,6 +7,7 @@ const { setupGame } = require('./acceptanceTestHelper')
 describe('socketEvents', () => {
   let serverDetails
   let testClient
+  let responses
 
   beforeAll(() => {
     serverDetails = server.httpServer.address()
@@ -18,11 +19,10 @@ describe('socketEvents', () => {
   })
 
   beforeEach((done) => {
+    responses = []
+
     testClient = ioClient(`http://localhost:${serverDetails.port}/`)
-
-    const wildCard = require('socketio-wildcard')(ioClient.Manager)
-    wildCard(testClient)
-
+    setupWildCardListening(testClient)
     testClient.on('connect', () => { done() })
   })
 
@@ -33,8 +33,6 @@ describe('socketEvents', () => {
 
   describe('create-game client event', () => {
     it('should emit events that the room is created, its host, and its roster', async (done) => {
-      const responses = []
-
       testClient.emit('create-game', 'John Doe', 'boring')
       testClient.on('*', (response) => {
         responses.push(response.data[1])
@@ -53,8 +51,6 @@ describe('socketEvents', () => {
     it('should emit events that the room is created, its host, and its roster', async (done) => {
       const roomName = await setupGame(serverDetails)
 
-      const responses = []
-
       testClient.emit('join-game', 'Jane Doe', roomName)
       testClient.on('*', (response) => {
         responses.push(response.data[1])
@@ -72,8 +68,6 @@ describe('socketEvents', () => {
     it('should emit events that game is started and the roster', async (done) => {
       const roomName = await setupGame(serverDetails)
       testClient.emit('join-game', 'Jane Doe', roomName)
-
-      const responses = []
 
       testClient.emit('start-game', roomName)
       testClient.on('*', (response) => {

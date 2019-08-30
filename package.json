@@ -5,8 +5,8 @@
   "main": "App.js",
   "scripts": {
     "start": "node App.js",
-    "test": "jest --watch",
-    "test-cov": "jest --coverage",
+    "test": "jest --watch --testPathIgnorePatterns ./acceptance",
+    "test-cov": "jest --coverage --testPathIgnorePatterns ./acceptance",
     "acceptance": "jest ./acceptance",
     "lint": "node_modules/eslint/bin/eslint.js .",
     "suite": "npm run lint && npm run test-cov && npm run acceptance"
