@@ -11,3 +11,7 @@ httpServer.listen(port, () => {
 })
 
 socketConnectionHandler(socketIo)
+
+module.exports = {
+  httpServer,
+}
